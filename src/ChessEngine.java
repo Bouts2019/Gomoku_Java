@@ -1,3 +1,6 @@
+import java.util.ArrayList;
+import java.util.List;
+
 public class ChessEngine {
     // 0 - no, 1 - black, 2 - white
     public static String[] Rating_Scale_Patterns = {
@@ -194,7 +197,8 @@ public class ChessEngine {
     /*
      * target -> 0 : black, 1 - white;
      * */
-    public static int[] evaluate_situation(int[][] board, int target) {
+
+    public static int[] evaluateSituation(int[][] board, int target) {
         int[] scores = new int[2];
         // 横着每一行
         for (int i = 0; i < 15; i++) {
@@ -327,5 +331,73 @@ public class ChessEngine {
             }
         }
         return scores;
+    }
+
+    static class Point {
+        int x;
+        int y;
+
+        Point(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+
+        @Override
+        public String toString() {
+            return this.x + ", " + this.y;
+        }
+    }
+
+    /*
+     * To simplify the function, so this function  just judge 1 block.
+     */
+
+    public static List<Point> getFreePoints(int[][] board, int hasWhat) {
+        // hasWhat -> 1 -> black, 2 -> white;
+        List<Point> points = new ArrayList();
+        for (int i = 0; i < 15; i++)
+            for (int j = 0; j < 15; j++) {
+                // 左边
+                if (board[i][j] != 0) continue;
+                if (j - 1 >= 0 && board[i][j - 1] == hasWhat) points.add(new Point(i, j));
+                // 右边
+                if (j + 1 <= 14 && board[i][j + 1] == hasWhat) points.add(new Point(i, j));
+                // 上边
+                if (i - 1 >= 0 && board[i - 1][j] == hasWhat) points.add(new Point(i, j));
+                // 下边
+                if (i + 1 <= 14 && board[i + 1][j] == hasWhat) points.add(new Point(i, j));
+                // 左上
+                if (i - 1 >= 0 && j - 1 >= 0 && board[i - 1][j - 1] == hasWhat) points.add(new Point(i, j));
+                // 左下
+                if (i + 1 <= 14 && j - 1 >= 0 && board[i + 1][j - 1] == hasWhat) points.add(new Point(i, j));
+                // 右上
+                if (i - 1 >= 0 && j + 1 <= 14 && board[i - 1][j + 1] == hasWhat) points.add(new Point(i, j));
+                // 右下
+                if (i + 1 <= 14 && j + 1 <= 14 && board[i + 1][j + 1] == hasWhat) points.add(new Point(i, j));
+            }
+        return points;
+    }
+
+    /*
+     * AIChess -> 1 : black, 2 - white;
+     * */
+
+    public static Point getNextStep(int[][] board, int AIChess) {
+        if (AIChess == 1) {
+            List<Point> points = getFreePoints(board, 1);
+            int maxScore = -1;
+            int maxIndex = 0;
+            for (int i = 0; i < points.size(); i++) {
+                int[][] tmpBoard = board;
+                tmpBoard[points.get(i).x][points.get(i).y] = 1;
+                int[] twoScores = evaluateSituation(board, 0);
+                if (twoScores[0] > maxScore) {
+                    maxScore = twoScores[0];
+                    maxIndex = i;
+                }
+            }
+            return points.get(maxIndex);
+        }
+        return new Point(0,0);
     }
 }
