@@ -1,3 +1,5 @@
+import jdk.management.resource.internal.inst.AbstractInterruptibleChannelRMHooks;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,22 +25,22 @@ public class ChessEngine {
     };
 
     public static int[] Rating_Scale_Scores = {
-            50000,
-            4320,
-            720,
-            720,
-            720,
-            720,
-            720,
-            720,
-            720,
-            720,
-            720,
-            120,
-            120,
-            120,
-            20,
-            20
+            5000,
+            432,
+            72,
+            72,
+            72,
+            72,
+            72,
+            72,
+            72,
+            72,
+            72,
+            12,
+            12,
+            12,
+            2,
+            2
     };
 
     public static int isAnyoneWin(int[][] board) {
@@ -71,7 +73,7 @@ public class ChessEngine {
         // 竖着找
         for (int i = 0; i < 15; i++) {
             for (int j = 0; j <= 10; j++) {
-                    if (board[j][i] == 1) {
+                if (board[j][i] == 1) {
                     boolean win = true;
                     for (int k = j; k < j + 5; k++) {        // 黑子，开始纵向判断
                         if (board[k][i] != 1) {
@@ -359,21 +361,21 @@ public class ChessEngine {
             for (int j = 0; j < 15; j++) {
                 // 左边
                 if (board[i][j] != 0) continue;
-                if (j - 1 >= 0 && board[i][j - 1] == hasWhat) points.add(new Point(i, j));
+                if (j - 1 >= 0 && board[i][j - 1] != 0) points.add(new Point(i, j));
                 // 右边
-                if (j + 1 <= 14 && board[i][j + 1] == hasWhat) points.add(new Point(i, j));
+                if (j + 1 <= 14 && board[i][j + 1] != 0) points.add(new Point(i, j));
                 // 上边
-                if (i - 1 >= 0 && board[i - 1][j] == hasWhat) points.add(new Point(i, j));
+                if (i - 1 >= 0 && board[i - 1][j] != 0) points.add(new Point(i, j));
                 // 下边
-                if (i + 1 <= 14 && board[i + 1][j] == hasWhat) points.add(new Point(i, j));
+                if (i + 1 <= 14 && board[i + 1][j] != 0) points.add(new Point(i, j));
                 // 左上
-                if (i - 1 >= 0 && j - 1 >= 0 && board[i - 1][j - 1] == hasWhat) points.add(new Point(i, j));
+                if (i - 1 >= 0 && j - 1 >= 0 && board[i - 1][j - 1] != 0) points.add(new Point(i, j));
                 // 左下
-                if (i + 1 <= 14 && j - 1 >= 0 && board[i + 1][j - 1] == hasWhat) points.add(new Point(i, j));
+                if (i + 1 <= 14 && j - 1 >= 0 && board[i + 1][j - 1] != 0) points.add(new Point(i, j));
                 // 右上
-                if (i - 1 >= 0 && j + 1 <= 14 && board[i - 1][j + 1] == hasWhat) points.add(new Point(i, j));
+                if (i - 1 >= 0 && j + 1 <= 14 && board[i - 1][j + 1] != 0) points.add(new Point(i, j));
                 // 右下
-                if (i + 1 <= 14 && j + 1 <= 14 && board[i + 1][j + 1] == hasWhat) points.add(new Point(i, j));
+                if (i + 1 <= 14 && j + 1 <= 14 && board[i + 1][j + 1] != 0) points.add(new Point(i, j));
             }
         return points;
     }
@@ -382,22 +384,67 @@ public class ChessEngine {
      * AIChess -> 1 : black, 2 - white;
      * */
 
-    public static Point getNextStep(int[][] board, int AIChess) {
-        if (AIChess == 1) {
-            List<Point> points = getFreePoints(board, 1);
-            int maxScore = -1;
-            int maxIndex = 0;
-            for (int i = 0; i < points.size(); i++) {
-                int[][] tmpBoard = board;
-                tmpBoard[points.get(i).x][points.get(i).y] = 1;
-                int[] twoScores = evaluateSituation(board, 0);
-                if (twoScores[0] > maxScore) {
-                    maxScore = twoScores[0];
-                    maxIndex = i;
-                }
-            }
-            return points.get(maxIndex);
+    static class PointWithScore {
+        Point point;
+        int score;
+
+        public PointWithScore(Point point, int score) {
+            this.point = point;
+            this.score = score;
         }
-        return new Point(0,0);
+    }
+
+    public static Point getNextStep(int[][] board, int AIChess) {
+        PointWithScore p = minmaxSearch(new Point(0, 0), board, 0, AIChess);
+        return p.point;
+    }
+
+    public static PointWithScore minmaxSearch(Point step, int[][] board, int depth, int AIChess) {
+        int score = 0;
+        if (depth >= 2) {   // 到达叶子节点，不再进行深搜
+            int tmp = -evaluateSituation(board, AIChess == 1 ? 2 : 1)[(AIChess == 1 ? 2 : 1) - 1];
+            return new PointWithScore(step, tmp);
+        } else {            // 没有到达叶子节点，继续深搜
+            List<Point> points = getFreePoints(board, (depth % 2 == 0 ) ? AIChess : (AIChess == 1 ? 2 : 1)); // 搜索所有可以用的点，传入AIChess，忽略黑子或是白子影响，因为要最大最小是按层数来的
+            List<PointWithScore> pointWithScores = new ArrayList<>(); // 带分数的点类型
+            if (depth % 2 == 0) {   // 在那一层之下，如果是偶数层之下就是要找最大值
+                int maxScore = Integer.MIN_VALUE;
+                int maxIndex = 0;
+                for (int i = 0; i < points.size(); i++) {
+                    int[][] tmpBoard = new int[15][15];
+                    for (int j = 0; j < 15; j++)
+                        for (int k = 0; k < 15; k++)
+                            tmpBoard[j][k] = board[j][k];   // 模拟下子用的棋盘
+                    tmpBoard[points.get(i).x][points.get(i).y] = AIChess;
+                    pointWithScores.add(minmaxSearch(points.get(i), tmpBoard, depth + 1, AIChess));
+                }
+
+                for (int i = 0; i < pointWithScores.size(); i++)
+                    if (pointWithScores.get(i).score > maxScore) {
+                        maxScore = pointWithScores.get(i).score;
+                        maxIndex = i;
+                    }
+                return new PointWithScore(points.get(maxIndex), pointWithScores.get(maxIndex).score);
+
+            } else {
+                int minScore = Integer.MAX_VALUE;
+                int minIndex = 0;
+                for (int i = 0; i < points.size(); i++) {
+                    int[][] tmpBoard = new int[15][15];
+                    for (int j = 0; j < 15; j++)
+                        for (int k = 0; k < 15; k++)
+                            tmpBoard[j][k] = board[j][k];   // 模拟下子用的棋盘
+                    tmpBoard[points.get(i).x][points.get(i).y] = AIChess == 1 ? 2 : 1;
+                    pointWithScores.add(minmaxSearch(points.get(i), tmpBoard, depth + 1, AIChess));
+                }
+
+                for (int i = 0; i < pointWithScores.size(); i++)
+                    if (pointWithScores.get(i).score < minScore) {
+                        minScore = pointWithScores.get(i).score;
+                        minIndex = i;
+                    }
+                return new PointWithScore(points.get(minIndex), pointWithScores.get(minIndex).score);
+            }
+        }
     }
 }
