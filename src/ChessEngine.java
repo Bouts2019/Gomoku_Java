@@ -395,14 +395,14 @@ public class ChessEngine {
     }
 
     public static Point getNextStep(int[][] board, int AIChess) {
-        PointWithScore p = minmaxSearch(new Point(0, 0), board, 0, AIChess);
+        PointWithScore p = minimax(new Point(0, 0), board, 0, AIChess);
         return p.point;
     }
 
-    public static PointWithScore minmaxSearch(Point step, int[][] board, int depth, int AIChess) {
+    public static PointWithScore minimax(Point step, int[][] board, int depth, int AIChess) {
         int score = 0;
         if (depth >= 2) {   // 到达叶子节点，不再进行深搜
-            int tmp = -evaluateSituation(board, AIChess == 1 ? 2 : 1)[(AIChess == 1 ? 2 : 1) - 1];
+            int tmp = evaluateSituation(board, AIChess - 1)[AIChess - 1]-evaluateSituation(board, AIChess == 1 ? 2 : 1 - 1)[(AIChess == 1 ? 2 : 1) - 1];
             return new PointWithScore(step, tmp);
         } else {            // 没有到达叶子节点，继续深搜
             List<Point> points = getFreePoints(board, (depth % 2 == 0 ) ? AIChess : (AIChess == 1 ? 2 : 1)); // 搜索所有可以用的点，传入AIChess，忽略黑子或是白子影响，因为要最大最小是按层数来的
@@ -416,7 +416,7 @@ public class ChessEngine {
                         for (int k = 0; k < 15; k++)
                             tmpBoard[j][k] = board[j][k];   // 模拟下子用的棋盘
                     tmpBoard[points.get(i).x][points.get(i).y] = AIChess;
-                    pointWithScores.add(minmaxSearch(points.get(i), tmpBoard, depth + 1, AIChess));
+                    pointWithScores.add(minimax(points.get(i), tmpBoard, depth + 1, AIChess));
                 }
 
                 for (int i = 0; i < pointWithScores.size(); i++)
@@ -435,7 +435,7 @@ public class ChessEngine {
                         for (int k = 0; k < 15; k++)
                             tmpBoard[j][k] = board[j][k];   // 模拟下子用的棋盘
                     tmpBoard[points.get(i).x][points.get(i).y] = AIChess == 1 ? 2 : 1;
-                    pointWithScores.add(minmaxSearch(points.get(i), tmpBoard, depth + 1, AIChess));
+                    pointWithScores.add(minimax(points.get(i), tmpBoard, depth + 1, AIChess));
                 }
 
                 for (int i = 0; i < pointWithScores.size(); i++)

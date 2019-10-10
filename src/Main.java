@@ -34,6 +34,7 @@ public class Main {
 
         System.out.println(point);
 
+
         //System.out.println(scores[0] + "," + scores[1]);
         //System.out.println(ChessEngine.isAnyoneWin(board));
     }
