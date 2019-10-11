@@ -400,7 +400,7 @@ public class ChessEngine {
     public static PointWithScore minimax(Point step, int[][] board, int depth, int AIChess) {
         int score = 0;
         if (depth >= 2) {   // 到达叶子节点，不再进行深搜
-            int tmp = evaluateSituation(board, AIChess - 1)[AIChess - 1]-evaluateSituation(board, AIChess == 1 ? 2 : 1 - 1)[(AIChess == 1 ? 2 : 1) - 1];
+            int tmp = evaluateSituation(board, AIChess - 1)[AIChess - 1]-evaluateSituation(board, (AIChess == 1 ? 2 : 1) - 1)[(AIChess == 1 ? 2 : 1) - 1];
             return new PointWithScore(step, tmp);
         } else {            // 没有到达叶子节点，继续深搜
             List<Point> points = getFreePoints(board, (depth % 2 == 0 ) ? AIChess : (AIChess == 1 ? 2 : 1)); // 搜索所有可以用的点，传入AIChess，忽略黑子或是白子影响，因为要最大最小是按层数来的
