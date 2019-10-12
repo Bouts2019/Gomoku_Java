@@ -1,8 +1,6 @@
 import javax.management.monitor.GaugeMonitorMBean;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Main {
     //static int[][] board = new int[15][15];
@@ -62,8 +60,19 @@ public class Main {
 
         /* main test*/
 
-        //AI_VS_AI();
-        Player_VS_AI();
+        AI_VS_AI();
+        System.out.println("Evaluation Time: " + ChessEngine.totalTime + "ms");
+
+        //List<ChessEngine.Point> points = new ArrayList<>();
+        //points.add(new ChessEngine.Point(0,0));
+        //ChessEngine.sortPoints(points);
+        //System.out.println(points.get(0));
+
+        //int[] score1 = ChessEngine.evaluateSituation(board, 0);
+        //int[] score2 = ChessEngine.evaluateSituation_2(board,0);
+        //System.out.println(score1[0] + "\n" + score2[0]);
+
+        //Player_VS_AI();
 
 
         /**/
@@ -139,24 +148,36 @@ public class Main {
     }
 
     public static void AI_VS_AI() throws InterruptedException {
+        long startTime = new Date().getTime();
         int[][] GameBoard = new int[15][15];
         boolean isFirstChess = true;
         int currentChess = 1;
+        double MAXROUND = 10;
+        double currentRound = 0.0;
+        List<ChessEngine.Point> savedSteps = new ArrayList<>();
         while(true) {
             if (!isFirstChess) {
                 ChessEngine.Point AIStep = ChessEngine.getNextStep(GameBoard, currentChess);
+                savedSteps.add(AIStep);
                 GameBoard[AIStep.x][AIStep.y] = currentChess;
+                currentRound += 0.5;
+                if (currentRound == MAXROUND) break;
                 currentChess = ((currentChess == 1) ?  2 : 1);
-                printBoard(GameBoard);
-                Thread.sleep(1000);
+                //printBoard(GameBoard);
             } else {
                 GameBoard[7][7] = 1;
+                savedSteps.add(new ChessEngine.Point(7,7));
+                currentRound += 0.5;
+                if (currentRound == MAXROUND) break;
                 isFirstChess = false;
                 currentChess = ((currentChess == 1) ?  2 : 1);
-                printBoard(GameBoard);
-                Thread.sleep(1000);
+                //printBoard(GameBoard);
             }
         }
+        long endTime = new Date().getTime();
+        for (ChessEngine.Point p : savedSteps) System.out.print("(" + p + ")->");
+        System.out.println();
+        System.out.println("Used Time: " + (endTime - startTime) + "ms");
     }
 
     public static int randChess(int[][] board) {

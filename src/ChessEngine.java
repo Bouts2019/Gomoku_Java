@@ -1,7 +1,17 @@
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class ChessEngine {
+    /*
+    Time test
+     */
+
+
+    static long totalTime = 0;
+
+    // ================
+
     // 0 - no, 1 - black, 2 - white
     public static String[] Rating_Scale_Patterns = {
             "OOOOO",
@@ -193,6 +203,80 @@ public class ChessEngine {
         }
         return 0;
     }
+    // (7, 7)->(6, 7)->(6, 6)->(5, 5)->(7, 5)->(5, 7)->(5, 4)->(7, 6)->(5, 8)->(6, 4)->(4, 6)->(3, 6)->(7, 8)->(4, 8)->(3, 7)->(3, 5)->(2, 5)->(5, 3)->(4, 4)->(4, 3)->
+    public static int[] evaluateSituation_2(int[][] board, int target) {
+        int[] scores = new int[2];
+        StringBuffer boardString = new StringBuffer();
+        long startTime = new Date().getTime();
+        for (int i = 0; i < 15; i++) {
+            for (int j = 0; j < 15; j++)
+                boardString.append(board[i][j] == 0 ? "+" : (board[i][j] == target + 1 ? "O" : "X"));
+        }
+        // 横向
+        for (int i = 0; i < 15; i++) {
+            String line = boardString.substring(i * 15 , i * 15 + 14);
+            for (int j = 0; j < Rating_Scale_Patterns.length; j++)                          // 模式匹配
+                if (line.indexOf(Rating_Scale_Patterns[j]) != -1) {
+                    scores[target] += Rating_Scale_Scores[j];
+                }
+        }
+        // 竖向
+        for (int i = 0; i < 15; i++) {
+            StringBuffer row = new StringBuffer();
+            for (int j = 0; j < 15; j++) {
+                row.append(boardString.charAt(15 * j + i));
+            }
+            for (int j = 0; j < Rating_Scale_Patterns.length; j++)                          // 模式匹配
+                if (row.indexOf(Rating_Scale_Patterns[j]) != -1) {
+                    scores[target] += Rating_Scale_Scores[j];
+                }
+        }
+        // 正斜向
+        for (int i = 0; i < 15; i++) {
+            StringBuffer sideline = new StringBuffer();
+            for (int j = 0; j < i + 1; j++) {
+                sideline.append(boardString.charAt(i + 14 * j));
+            }
+            for (int j = 0; j < Rating_Scale_Patterns.length; j++)                          // 模式匹配
+                if (sideline.indexOf(Rating_Scale_Patterns[j]) != -1) {
+                    scores[target] += Rating_Scale_Scores[j];
+                }
+        }
+        for (int i = 0; i < 14; i++) {
+            StringBuffer sideline = new StringBuffer();
+            for (int j = 0; j < i + 1; j++) {
+                sideline.append(boardString.charAt(224 - i - 14 * j));
+            }
+            for (int j = 0; j < Rating_Scale_Patterns.length; j++)                          // 模式匹配
+                if (sideline.indexOf(Rating_Scale_Patterns[j]) != -1) {
+                    scores[target] += Rating_Scale_Scores[j];
+                }
+        }
+        // 反斜向
+        for (int i = 0; i < 15; i++) {
+            StringBuffer sideline = new StringBuffer();
+            for (int j = 0; j < i + 1; j++) {
+                sideline.append(boardString.charAt(14 - i + 16 * j));
+            }
+            for (int j = 0; j < Rating_Scale_Patterns.length; j++)                          // 模式匹配
+                if (sideline.indexOf(Rating_Scale_Patterns[j]) != -1) {
+                    scores[target] += Rating_Scale_Scores[j];
+                }
+        }
+        for (int i = 0; i < 14; i++) {
+            StringBuffer sideline = new StringBuffer();
+            for (int j = 0; j < i + 1; j++) {
+                sideline.append(boardString.charAt(210 + i - 16 * j));
+            }
+            for (int j = 0; j < Rating_Scale_Patterns.length; j++)                          // 模式匹配
+                if (sideline.indexOf(Rating_Scale_Patterns[j]) != -1) {
+                    scores[target] += Rating_Scale_Scores[j];
+                }
+        }
+        long endTime = new Date().getTime();
+        totalTime += endTime - startTime;
+        return scores;
+    }
 
     /*
      * target -> 0 : black, 1 - white;
@@ -201,6 +285,7 @@ public class ChessEngine {
     public static int[] evaluateSituation(int[][] board, int target) {
         int[] scores = new int[2];
         // 横着每一行
+        long startTime = new Date().getTime();
         for (int i = 0; i < 15; i++) {
             String lineConv = new String();
             for (int j = 0; j < 15; j++)
@@ -330,6 +415,8 @@ public class ChessEngine {
                         scores[1] += Rating_Scale_Scores[j];
             }
         }
+        long endTime = new Date().getTime();
+        totalTime += endTime - startTime;
         return scores;
     }
 
@@ -347,6 +434,11 @@ public class ChessEngine {
             return this.x + ", " + this.y;
         }
     }
+
+    public static void sortPoints(List<Point> original_points) {
+        original_points.set(0, new Point(1,1));
+    }
+
 
     /*
      * To simplify the function, so this function  just judge 1 block.
@@ -375,6 +467,9 @@ public class ChessEngine {
                 // 右下
                 if (i + 1 <= 14 && j + 1 <= 14 && board[i + 1][j + 1] != 0) points.add(new Point(i, j));
             }
+
+        sortPoints(points);
+
         return points;
     }
 
@@ -393,14 +488,15 @@ public class ChessEngine {
     }
 
     public static Point getNextStep(int[][] board, int AIChess) {
-        PointWithScore p = minimax(new Point(0, 0), board, 0, AIChess);
+        PointWithScore p = minimax(new Point(0, 0), board, 0, AIChess, new int[] {Integer.MAX_VALUE});
         return p.point;
     }
 
-    public static PointWithScore minimax(Point step, int[][] board, int depth, int AIChess) {
+    public static PointWithScore minimax(Point step, int[][] board, int depth, int AIChess, int[] recode) {
         int score = 0;
-        if (depth >= 2) {   // 到达叶子节点，不再进行深搜
-            int tmp = evaluateSituation(board, AIChess - 1)[AIChess - 1]-evaluateSituation(board, (AIChess == 1 ? 2 : 1) - 1)[(AIChess == 1 ? 2 : 1) - 1];
+        if (depth >= 3) {   // 到达叶子节点，不再进行深搜
+            int tmp = evaluateSituation_2(board, AIChess - 1)[AIChess - 1]-evaluateSituation_2(board, (AIChess == 1 ? 2 : 1) - 1)[(AIChess == 1 ? 2 : 1) - 1];
+            recode[0] = tmp;
             return new PointWithScore(step, tmp);
         } else {            // 没有到达叶子节点，继续深搜
             List<Point> points = getFreePoints(board, (depth % 2 == 0 ) ? AIChess : (AIChess == 1 ? 2 : 1)); // 搜索所有可以用的点，传入AIChess，忽略黑子或是白子影响，因为要最大最小是按层数来的
@@ -408,13 +504,18 @@ public class ChessEngine {
             if (depth % 2 == 0) {   // 在那一层之下，如果是偶数层之下就是要找最大值
                 int maxScore = Integer.MIN_VALUE;
                 int maxIndex = 0;
+                int[] maxRecode = new int[1];
+                maxRecode[0] = Integer.MIN_VALUE;
                 for (int i = 0; i < points.size(); i++) {
                     int[][] tmpBoard = new int[15][15];
                     for (int j = 0; j < 15; j++)
                         for (int k = 0; k < 15; k++)
                             tmpBoard[j][k] = board[j][k];   // 模拟下子用的棋盘
                     tmpBoard[points.get(i).x][points.get(i).y] = AIChess;
-                    pointWithScores.add(minimax(points.get(i), tmpBoard, depth + 1, AIChess));
+                    PointWithScore P = minimax(points.get(i), tmpBoard, depth + 1, AIChess, maxRecode);
+                    if (P.score > recode[0])
+                        return new PointWithScore(new Point(0,0), Integer.MAX_VALUE);
+                    pointWithScores.add(P);
                 }
 
                 for (int i = 0; i < pointWithScores.size(); i++)
@@ -422,18 +523,24 @@ public class ChessEngine {
                         maxScore = pointWithScores.get(i).score;
                         maxIndex = i;
                     }
+                recode[0] = pointWithScores.get(maxIndex).score;
                 return new PointWithScore(points.get(maxIndex), pointWithScores.get(maxIndex).score);
 
             } else {
                 int minScore = Integer.MAX_VALUE;
                 int minIndex = 0;
+                int[] minRecord = new int[1];
+                minRecord[0] = Integer.MAX_VALUE;
                 for (int i = 0; i < points.size(); i++) {
                     int[][] tmpBoard = new int[15][15];
                     for (int j = 0; j < 15; j++)
                         for (int k = 0; k < 15; k++)
                             tmpBoard[j][k] = board[j][k];   // 模拟下子用的棋盘
                     tmpBoard[points.get(i).x][points.get(i).y] = AIChess == 1 ? 2 : 1;
-                    pointWithScores.add(minimax(points.get(i), tmpBoard, depth + 1, AIChess));
+                    PointWithScore P = minimax(points.get(i), tmpBoard, depth + 1, AIChess, minRecord);
+                    if (P.score < recode[0])
+                        return new PointWithScore(new Point(0,0), Integer.MIN_VALUE);
+                    pointWithScores.add(P);
                 }
 
                 for (int i = 0; i < pointWithScores.size(); i++)
@@ -441,6 +548,7 @@ public class ChessEngine {
                         minScore = pointWithScores.get(i).score;
                         minIndex = i;
                     }
+                recode[0] = pointWithScores.get(minIndex).score;
                 return new PointWithScore(points.get(minIndex), pointWithScores.get(minIndex).score);
             }
         }
