@@ -32,15 +32,15 @@ public class Main {
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,1,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,1,0,0,0,0,0,0,0,0,0},
-            {0,0,0,1,2,2,2,0,1,0,0,0,0,0,0},
-            {0,0,0,0,0,1,1,2,0,0,0,0,0,0,0},
-            {0,0,0,0,0,2,1,1,0,0,0,0,0,0,0},
-            {0,0,0,0,0,2,1,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,2,2,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,2,0,1,0,0,0,0,0,0,0},
-            {0,0,0,0,2,1,0,2,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,2,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,1,0,0,0,0,0,0,0},
+            {0,0,0,0,2,1,1,1,1,2,0,0,0,0,0},
+            {0,0,0,0,0,1,0,1,2,2,0,0,0,0,0},
+            {0,0,0,0,0,0,2,1,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,2,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
@@ -55,14 +55,21 @@ public class Main {
         //List<ChessEngine.Point> points = ChessEngine.getFreePoints(board, 1);
         //for(ChessEngine.Point n : points) System.out.println(n);
 
-        //ChessEngine.Point p = ChessEngine.getNextStep(board, 1);
+        //ChessEngine.Point p = ChessEngine.getNextStep(board, 2);
         //System.out.println(p);
 
         /* main test*/
 
-        AI_VS_AI();
-        System.out.println("Evaluation Time: " + ChessEngine.totalTime + "ms");
+        /*
+        long total = 0;
+        for (int i = 0; i < 100; i++) {
+            AI_VS_AI();
+            total += ChessEngine.totalTime;
+            ChessEngine.totalTime = 0;
+        }
+        System.out.println("Average time is :" + (double)total / 100.0);
 
+         */
         //List<ChessEngine.Point> points = new ArrayList<>();
         //points.add(new ChessEngine.Point(0,0));
         //ChessEngine.sortPoints(points);
@@ -72,7 +79,7 @@ public class Main {
         //int[] score2 = ChessEngine.evaluateSituation_2(board,0);
         //System.out.println(score1[0] + "\n" + score2[0]);
 
-        //Player_VS_AI();
+        Player_VS_AI();
 
 
         /**/
@@ -164,6 +171,7 @@ public class Main {
                 if (currentRound == MAXROUND) break;
                 currentChess = ((currentChess == 1) ?  2 : 1);
                 //printBoard(GameBoard);
+                //Thread.sleep(500);
             } else {
                 GameBoard[7][7] = 1;
                 savedSteps.add(new ChessEngine.Point(7,7));
@@ -172,6 +180,7 @@ public class Main {
                 isFirstChess = false;
                 currentChess = ((currentChess == 1) ?  2 : 1);
                 //printBoard(GameBoard);
+                //Thread.sleep(500);
             }
         }
         long endTime = new Date().getTime();

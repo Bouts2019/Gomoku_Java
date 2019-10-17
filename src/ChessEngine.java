@@ -435,8 +435,44 @@ public class ChessEngine {
         }
     }
 
-    public static void sortPoints(List<Point> original_points) {
-        original_points.set(0, new Point(1,1));
+    public static void sortPoints(int[][] board, int hasWhat, List<Point> original_points) {
+        List<Point> fiveChess = new ArrayList<>();
+        List<Point> fourChess = new ArrayList<>();
+        List<Point> threeChess = new ArrayList<>();
+        List<Point> otherChess = new ArrayList<>();
+        for (Point p : original_points) {
+            StringBuffer line = new StringBuffer();
+            StringBuffer row = new StringBuffer();
+            StringBuffer positiveSideLine = new StringBuffer();
+            StringBuffer inverseSideLine = new StringBuffer();
+            // 横
+            for (int i = -4; i <= 4; i++) {
+                if (p.y + i >= 0 && p.y + i <= 14)
+                    line.append(board[p.x][p.y + i] == 0 ? "+" : board[p.x][p.y + i] == hasWhat ? "O" : "X");
+                if (p.x + i >= 0 && p.x + i <= 14)
+                    row.append(board[p.x + i][p.y] == 0 ? "+" : board[p.x + i][p.y] == hasWhat ? "O" : "X");
+                if (p.x + i >= 0 && p.x + i <= 14 && p.y + i >= 0 && p.y + i <=14)
+                    positiveSideLine.append(board[p.x + i][p.y + i] == 0 ? "+" : board[p.x + i][p.y + i] == hasWhat ? "O" : "X");
+                if (p.x + i >= 0 && p.x + i <= 14 && p.y - i >= 0 && p.y - i <= 14)
+                    inverseSideLine.append(board[p.x + i][p.y - i] == 0 ? "+" : board[p.x + i][p.y - i] == hasWhat ? "O" : "X");
+            }
+
+            if (line.indexOf("OOOOO") != -1 || row.indexOf("OOOOO") != -1 || positiveSideLine.indexOf("OOOOO") != -1 || inverseSideLine.indexOf("OOOOO") != -1 )
+                fiveChess.add(p);
+            else if (line.indexOf("OOOO") != -1 || row.indexOf("OOOO") != -1 || positiveSideLine.indexOf("OOOO") != -1 || inverseSideLine.indexOf("OOOO") != -1 )
+                fourChess.add(p);
+            else if (line.indexOf("OOO") != -1 || row.indexOf("OOO") != -1 || positiveSideLine.indexOf("OOO") != -1 || inverseSideLine.indexOf("OOO") != -1 )
+                threeChess.add(p);
+            else
+                otherChess.add(p);
+        }
+
+        original_points.clear();
+
+        for (Point p : fiveChess) original_points.add(p);
+        for (Point p : fourChess) original_points.add(p);
+        for (Point p : threeChess) original_points.add(p);
+        for (Point p : otherChess) original_points.add(p);
     }
 
 
@@ -444,31 +480,39 @@ public class ChessEngine {
      * To simplify the function, so this function  just judge 1 block.
      */
 
+    /*
+    Depth = 3
+    Used Time: 26349ms
+    Evaluation Time: 25910ms
+    (7, 7)->(6, 8)->(5, 8)->(6, 9)->(6, 7)->(7, 6)->(5, 6)->(8, 7)->(5, 7)->(5, 9)->(4, 7)->(3, 7)->(5, 5)->(5, 4)->(6, 5)->(7, 8)->(7, 4)->(9, 6)->(7, 5)->(4, 5)->
+     */
+
     public static List<Point> getFreePoints(int[][] board, int hasWhat) {
         // hasWhat -> 1 -> black, 2 -> white;
         List<Point> points = new ArrayList();
-        for (int i = 0; i < 15; i++)
+        for (int i = 0; i < 15; i++) {
             for (int j = 0; j < 15; j++) {
                 // 左边
                 if (board[i][j] != 0) continue;
                 if (j - 1 >= 0 && board[i][j - 1] != 0) points.add(new Point(i, j));
-                // 右边
-                if (j + 1 <= 14 && board[i][j + 1] != 0) points.add(new Point(i, j));
-                // 上边
-                if (i - 1 >= 0 && board[i - 1][j] != 0) points.add(new Point(i, j));
-                // 下边
-                if (i + 1 <= 14 && board[i + 1][j] != 0) points.add(new Point(i, j));
-                // 左上
-                if (i - 1 >= 0 && j - 1 >= 0 && board[i - 1][j - 1] != 0) points.add(new Point(i, j));
-                // 左下
-                if (i + 1 <= 14 && j - 1 >= 0 && board[i + 1][j - 1] != 0) points.add(new Point(i, j));
-                // 右上
-                if (i - 1 >= 0 && j + 1 <= 14 && board[i - 1][j + 1] != 0) points.add(new Point(i, j));
-                // 右下
-                if (i + 1 <= 14 && j + 1 <= 14 && board[i + 1][j + 1] != 0) points.add(new Point(i, j));
+                    // 右边
+                else if (j + 1 <= 14 && board[i][j + 1] != 0) points.add(new Point(i, j));
+                    // 上边
+                else if (i - 1 >= 0 && board[i - 1][j] != 0) points.add(new Point(i, j));
+                    // 下边
+                else if (i + 1 <= 14 && board[i + 1][j] != 0) points.add(new Point(i, j));
+                    // 左上
+                else if (i - 1 >= 0 && j - 1 >= 0 && board[i - 1][j - 1] != 0) points.add(new Point(i, j));
+                    // 左下
+                else if (i + 1 <= 14 && j - 1 >= 0 && board[i + 1][j - 1] != 0) points.add(new Point(i, j));
+                    // 右上
+                else if (i - 1 >= 0 && j + 1 <= 14 && board[i - 1][j + 1] != 0) points.add(new Point(i, j));
+                    // 右下
+                else if (i + 1 <= 14 && j + 1 <= 14 && board[i + 1][j + 1] != 0) points.add(new Point(i, j));
             }
-
-        sortPoints(points);
+        }
+        //(6, 6)->(6, 7)->(6, 8)->(7, 6)->(7, 8)->(8, 6)->(8, 7)->(8, 8)->
+        //sortPoints(board, hasWhat, points);
 
         return points;
     }
@@ -494,7 +538,7 @@ public class ChessEngine {
 
     public static PointWithScore minimax(Point step, int[][] board, int depth, int AIChess, int[] recode) {
         int score = 0;
-        if (depth >= 3) {   // 到达叶子节点，不再进行深搜
+        if (depth >= 4) {   // 到达叶子节点，不再进行深搜
             int tmp = evaluateSituation_2(board, AIChess - 1)[AIChess - 1]-evaluateSituation_2(board, (AIChess == 1 ? 2 : 1) - 1)[(AIChess == 1 ? 2 : 1) - 1];
             recode[0] = tmp;
             return new PointWithScore(step, tmp);
