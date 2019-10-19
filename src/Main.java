@@ -27,7 +27,37 @@ public class Main {
     solved at 2019.10.11 20:00
 
      */
-
+    public static String BookStr = "寒星局:H8,H9,H10\n" +
+            "溪月局:H8,H9,I10|H8,H9,G10\n" +
+            "疏星局:H8,H9,J10|H8,H9,F10\n" +
+            "花月局:H8,H9,I9|H8,H9,G9\n" +
+            "残月局:H8,H9,J9|H8,H9,F9\n" +
+            "雨月局:H8,H9,I8|H8,H9,G8\n" +
+            "金星局:H8,H9,J8|H8,H9,F8\n" +
+            "松月局:H8,H9,H7\n" +
+            "丘月局:H8,H9,I7|H8,H9,G7\n" +
+            "新月局:H8,H9,J7|H8,H9,F7\n" +
+            "瑞星局:H8,H9,H6\n" +
+            "山月局:H8,H9,I6|H8,H9,G6\n" +
+            "游星局:H8,H9,J6|H8,H9,F6\n" +
+            "长星局:H8,I9,J10\n" +
+            "峡月局:H8,I9,J9|H8,I9,I10\n" +
+            "恒星局:H8,I9,J8|H8,I9,H10\n" +
+            "水月局:H8,I9,J7|H8,I9,G10\n" +
+            "流星局:H8,I9,J6|H8,I9,F10\n" +
+            "云月局:H8,I9,I8|H8,I9,H9\n" +
+            "浦月局:H8,I9,I7|H8,I9,G9\n" +
+            "岚月局:H8,I9,I6|H8,I9,F9\n" +
+            "银月局:H8,I9,H7|H8,I9,G8\n" +
+            "明星局:H8,I9,H6|H8,I9,F8\n" +
+            "斜月局:H8,I9,G7|H8,I9,G7\n" +
+            "名月局:H8,I9,G6|H8,I9,F7\n" +
+            "彗星局:H8,I9,F6";
+    public static boolean sanshoujiaohuan = false;
+    public static boolean wushouNda = false;
+    public static boolean jinshou = false;
+    public static Map<String, String[]> books ;
+    public static List<String> names;
     static int[][] board = {
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -47,11 +77,21 @@ public class Main {
     };
     public static void main(String[] args) throws InterruptedException {
         System.out.println("This CLI only used in testing...");
-
+        names = new ArrayList<>();
         //int res = randChess(randomBoard);
         //int[] scores = ChessEngine.evaluateSituation(board, 0);
         //printBoard(randomBoard);
-
+        books = new HashMap<>();
+        String[] books_strs = BookStr.split("\n");
+        for (int i = 0; i < 26; i++) {
+            books.put(books_strs[i].substring(0,3),books_strs[i].substring(4).split("\\|"));
+            names.add(books_strs[i].substring(0,3));
+        }
+        //System.out.println(books.size());
+        //for (Map.Entry<String, String[]> entry : books.entrySet()) {
+        //    System.out.println(entry.getKey() + ":" + entry.getValue()[0]);
+        //}
+        //return;
         //List<ChessEngine.Point> points = ChessEngine.getFreePoints(board, 1);
         //for(ChessEngine.Point n : points) System.out.println(n);
 
@@ -79,6 +119,8 @@ public class Main {
         //int[] score2 = ChessEngine.evaluateSituation_2(board,0);
         //System.out.println(score1[0] + "\n" + score2[0]);
 
+
+
         Player_VS_AI();
 
 
@@ -94,64 +136,145 @@ public class Main {
     }
 
     public static void Player_VS_AI() {
-        String choice = "";
-        System.out.println("Please choose the first player: ");
-        System.out.println("#1. You");
-        System.out.println("#2. AI");
-        int[][] GameBoard = new int[15][15];
-        Scanner scanner = new Scanner(System.in);
-        choice = scanner.next();
-        if (choice.equals("1")) {
-            printBoard(GameBoard);
-            while (true) {
-                System.out.println("Enter the point: ");
-                String point = scanner.next();
-                if (point.equals("quit")) break;
-                String[] x_y_String = point.split(",");
-                int[] x_y = new int[2];
-                x_y[0] = Integer.parseInt(x_y_String[0]);
-                x_y[1] = Integer.parseInt(x_y_String[1]);
-                GameBoard[x_y[0] - 1][x_y[1] - 1] = 1;
-                printBoard(GameBoard);
-                if (ChessEngine.isAnyoneWin(GameBoard) != 0) break;
-                System.out.println("AI is thinking...");
-                ChessEngine.Point AIStep = ChessEngine.getNextStep(GameBoard, 2);
-                GameBoard[AIStep.x][AIStep.y] = 2;
-                printBoard(GameBoard);
-                if (ChessEngine.isAnyoneWin(GameBoard) != 0) break;
-            }
-        } else if (choice.equals("2")) {
-            printBoard(GameBoard);
-            boolean isFirstChess = true;
-            while (true) {
-                System.out.println("AI is thinking...");
-                if (!isFirstChess) {
-                    ChessEngine.Point AIStep = ChessEngine.getNextStep(GameBoard, 1);
-                    GameBoard[AIStep.x][AIStep.y] = 1;
-                } else {
-                    GameBoard[7][7] = 1;
-                    isFirstChess = false;
+        while (true) {
+            String choice = "";
+            System.out.println("Please choose the first player: ");
+            System.out.println("#1. You");
+            System.out.println("#2. AI");
+            System.out.println("#3. Settings");
+            int[][] GameBoard = new int[15][15];
+            Scanner scanner = new Scanner(System.in);
+            choice = scanner.next();
+
+            if (choice.equals("1")) {
+                if (sanshoujiaohuan && wushouNda) {
+                    System.out.println("请输入前三子位置,\",\"分隔：");
+                    String first3points = "";
+                    for (int i = 0; i < 3; i++) {
+                        String point = scanner.next();
+                        first3points += point;
+                        if (i != 2) first3points += ",";
+                        String[] x_y_String = point.split(",");
+                        int[] x_y = new int[2];
+                        x_y[0] = 16 - Integer.parseInt(point.substring(1));
+                        x_y[1] = (int)(point.charAt(0) - 'A') + 1;
+                        GameBoard[x_y[0] - 1][x_y[1] - 1] = i % 2 + 1;
+                    }
+                    printBoard(GameBoard);
+                    System.out.println("请输入打点数量：");
+                    boolean chooseChange = false;
+                    int count = scanner.nextInt();
+                    for (Map.Entry<String, String[]> entry : books.entrySet()) {
+                        for (String jumian : entry.getValue()) {
+                            if (jumian.equals(first3points)) {
+                                if (entry.getKey().equals("花月局") || entry.getKey().equals("浦月局")) {
+                                    chooseChange = true;
+                                }
+                            }
+                        }
+                    }
+                    if (chooseChange) {
+                        System.out.println("AI选择交换，现在由AI执黑子");
+                        for (int i = 0; i < count; i++) {
+
+                        }
+                    } else {
+                        System.out.println("AI不选择交换，您仍然是黑子");
+                    }
                 }
                 printBoard(GameBoard);
-                if (ChessEngine.isAnyoneWin(GameBoard) != 0) break;
-                System.out.println("Enter the point: ");
-                String point = scanner.next();
-                if (point.equals("quit")) break;
-                String[] x_y_String = point.split(",");
-                int[] x_y = new int[2];
-                x_y[0] = Integer.parseInt(x_y_String[0]);
-                x_y[1] = Integer.parseInt(x_y_String[1]);
-                GameBoard[x_y[0] - 1][x_y[1] - 1] = 2;
+                while (true) {
+                    System.out.println("Enter the point: ");
+                    String point = scanner.next();
+                    if (point.equals("quit")) break;
+                    String[] x_y_String = point.split(",");
+                    int[] x_y = new int[2];
+                    x_y[0] = 16 - Integer.parseInt(point.substring(1));
+                    x_y[1] = (int)(point.charAt(0) - 'A') + 1;
+                    GameBoard[x_y[0] - 1][x_y[1] - 1] = 1;
+                    printBoard(GameBoard);
+                    if (ChessEngine.isAnyoneWin(GameBoard) != 0) break;
+                    System.out.println("AI is thinking...");
+                    ChessEngine.Point AIStep = ChessEngine.getNextStep(GameBoard, 2);
+                    GameBoard[AIStep.x][AIStep.y] = 2;
+                    printBoard(GameBoard);
+                    if (ChessEngine.isAnyoneWin(GameBoard) != 0) break;
+                }
+            } else if (choice.equals("2")) {
                 printBoard(GameBoard);
-                if (ChessEngine.isAnyoneWin(GameBoard) != 0) break;
+                boolean isFirstChess = true;
+                while (true) {
+                    System.out.println("AI is thinking...");
+                    if (!isFirstChess) {
+                        ChessEngine.Point AIStep = ChessEngine.getNextStep(GameBoard, 1);
+                        GameBoard[AIStep.x][AIStep.y] = 1;
+                    } else {
+                        GameBoard[7][7] = 1;
+                        isFirstChess = false;
+                    }
+                    printBoard(GameBoard);
+                    if (ChessEngine.isAnyoneWin(GameBoard) != 0) break;
+                    System.out.println("Enter the point: ");
+                    String point = scanner.next();
+                    if (point.equals("quit")) break;
+                    String[] x_y_String = point.split(",");
+                    int[] x_y = new int[2];
+                    x_y[0] = 16 - Integer.parseInt(point.substring(1));
+                    x_y[1] = (int)(point.charAt(0) - 'A') + 1;
+                    GameBoard[x_y[0] - 1][x_y[1] - 1] = 2;
+                    printBoard(GameBoard);
+                    if (ChessEngine.isAnyoneWin(GameBoard) != 0) break;
+                }
+            } else if (choice.equals("3")) {
+                String opeation = "";
+                if (scanner.hasNextLine()) opeation = scanner.nextLine();
+                while (opeation.equals("quit") == false) {
+                    System.out.println("#1. 禁手规则 " + (jinshou ? "√" : "×"));
+                    System.out.println("#2. 三手交换 " + (sanshoujiaohuan ? "√" : "×"));
+                    System.out.println("#3. 五手N打 " + (wushouNda ? "√" : "×"));
+
+                    System.out.println("#输入命令:");
+                    opeation = scanner.nextLine();
+
+                    if (opeation.equals("set all true")) {
+                        jinshou = true;
+                        sanshoujiaohuan = true;
+                        wushouNda = true;
+                    } else if (opeation.equals("set 1 = true")) {
+                        jinshou = true;
+                    } else if (opeation.equals("set 2 = true")) {
+                        sanshoujiaohuan = true;
+                    } else if (opeation.equals("set 3 = true")) {
+                        wushouNda = true;
+                    } else if (opeation.equals("set 1 = false")) {
+                        jinshou = false;
+                    } else if (opeation.equals("set 2 = false")) {
+                        sanshoujiaohuan = false;
+                    } else if (opeation.equals("set 3 = false")) {
+                        wushouNda = false;
+                    } else if (opeation.equals("set all false")) {
+                        jinshou = false;
+                        sanshoujiaohuan = false;
+                        wushouNda = false;
+                    } else if (opeation.equals("quit")) {
+                        break;
+                    } else {
+                        System.out.println("未定义的操作");
+                    }
+                }
+
+
+            } else {
+                System.out.println("Unknow operation, try again.");
+            }
+
+            if (ChessEngine.isAnyoneWin(GameBoard) == 1) {
+                System.out.println("###### Black Win ! ######");
+            } else if (ChessEngine.isAnyoneWin(GameBoard) == 2) {
+                System.out.println("###### White Win ! ######");
             }
         }
 
-        if (ChessEngine.isAnyoneWin(GameBoard) == 1) {
-            System.out.println("###### Black Win ! ######");
-        } else {
-            System.out.println("###### White Win ! ######");
-        }
     }
 
     public static void AI_VS_AI() throws InterruptedException {
@@ -213,12 +336,8 @@ public class Main {
     // 0 - blank, 1 - AI, 2 - Player
 
     public static void printBoard(int[][] board) {
-        System.out.print("  ");
-        for (int i = 0; i < 15; i++)
-            System.out.print((i + 1) >= 10 ? (i + 1) + "|" : "0" + (i + 1) + "|");
-        System.out.println();
         for (int i = 0; i < 15; i++) {
-            System.out.print(i + 1 >= 10 ? i + 1  : "0" + (i + 1));
+            System.out.print(15 - i >= 10 ? 15 - i : "0" + (15 - i) );
             for (int j = 0;j < 15; j++) {
                 switch (board[i][j]) {
                     case 0:
@@ -234,5 +353,9 @@ public class Main {
             }
             System.out.println();
         }
+        System.out.print("  ");
+        for (int i = 0; i < 15; i++)
+            System.out.print((char)('A' + i) + " |") ;
+        System.out.println();
     }
 }
