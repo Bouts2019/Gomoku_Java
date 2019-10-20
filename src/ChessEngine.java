@@ -538,7 +538,7 @@ public class ChessEngine {
 
     public static PointWithScore minimax(Point step, int[][] board, int depth, int AIChess, int[] recode) {
         int score = 0;
-        if (depth >= 4) {   // 到达叶子节点，不再进行深搜
+        if (depth >= 2) {   // 到达叶子节点，不再进行深搜
             int tmp = evaluateSituation_2(board, AIChess - 1)[AIChess - 1]-evaluateSituation_2(board, (AIChess == 1 ? 2 : 1) - 1)[(AIChess == 1 ? 2 : 1) - 1];
             recode[0] = tmp;
             return new PointWithScore(step, tmp);

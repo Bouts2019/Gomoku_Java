@@ -1,3 +1,5 @@
+import com.sun.media.jfxmediaimpl.HostUtils;
+
 import javax.management.monitor.GaugeMonitorMBean;
 import java.io.IOException;
 import java.util.*;
@@ -53,22 +55,24 @@ public class Main {
             "斜月局:H8,I9,G7|H8,I9,G7\n" +
             "名月局:H8,I9,G6|H8,I9,F7\n" +
             "彗星局:H8,I9,F6";
-    public static boolean sanshoujiaohuan = false;
-    public static boolean wushouNda = false;
-    public static boolean jinshou = false;
+    public static boolean sanshoujiaohuan = true;
+    public static boolean wushouNda = true;
+    public static boolean jinshou = true;
     public static Map<String, String[]> books ;
     public static List<String> names;
+    public static int AIChess = 0;
+    public static ChessEngine.Point lastPoint = new ChessEngine.Point(8,5);
     static int[][] board = {
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,2,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,1,0,0,0,0,0,0,0},
-            {0,0,0,0,2,1,1,1,1,2,0,0,0,0,0},
-            {0,0,0,0,0,1,0,1,2,2,0,0,0,0,0},
-            {0,0,0,0,0,0,2,1,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,2,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,1,1,1,1,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -126,7 +130,7 @@ public class Main {
 
         /**/
 
-        //ChessEngine.Point point = ChessEngine.getNextStep(board, 1);
+        //ChessEngine.Point point = ChessEngine.getNextStep(board, 2);
 
         //System.out.println(point);
 
@@ -137,6 +141,8 @@ public class Main {
 
     public static void Player_VS_AI() {
         while (true) {
+
+            boolean gameStart = false;
             String choice = "";
             System.out.println("Please choose the first player: ");
             System.out.println("#1. You");
@@ -162,70 +168,99 @@ public class Main {
                     }
                     printBoard(GameBoard);
                     System.out.println("请输入打点数量：");
-                    boolean chooseChange = false;
-                    int count = scanner.nextInt();
-                    for (Map.Entry<String, String[]> entry : books.entrySet()) {
-                        for (String jumian : entry.getValue()) {
-                            if (jumian.equals(first3points)) {
-                                if (entry.getKey().equals("花月局") || entry.getKey().equals("浦月局")) {
-                                    chooseChange = true;
-                                }
-                            }
-                        }
-                    }
-                    if (chooseChange) {
-                        System.out.println("AI选择交换，现在由AI执黑子");
-                        for (int i = 0; i < count; i++) {
 
-                        }
-                    } else {
-                        System.out.println("AI不选择交换，您仍然是黑子");
-                    }
-                }
-                printBoard(GameBoard);
-                while (true) {
-                    System.out.println("Enter the point: ");
-                    String point = scanner.next();
-                    if (point.equals("quit")) break;
-                    String[] x_y_String = point.split(",");
-                    int[] x_y = new int[2];
-                    x_y[0] = 16 - Integer.parseInt(point.substring(1));
-                    x_y[1] = (int)(point.charAt(0) - 'A') + 1;
-                    GameBoard[x_y[0] - 1][x_y[1] - 1] = 1;
-                    printBoard(GameBoard);
-                    if (ChessEngine.isAnyoneWin(GameBoard) != 0) break;
-                    System.out.println("AI is thinking...");
+                    int count = scanner.nextInt();
+
+                    System.out.println("AI不选择交换，您仍然是黑子");
                     ChessEngine.Point AIStep = ChessEngine.getNextStep(GameBoard, 2);
                     GameBoard[AIStep.x][AIStep.y] = 2;
                     printBoard(GameBoard);
-                    if (ChessEngine.isAnyoneWin(GameBoard) != 0) break;
-                }
-            } else if (choice.equals("2")) {
+                    ChessEngine.Point[] dadianzi = new ChessEngine.Point[count];
+                    for (int i = 0; i < count; i++) {
+                        System.out.println("请输入第" + (i + 1) + "个打点位置");
+                        String point = scanner.next();
+                        int[] x_y = new int[2];
+                        x_y[0] = 16 - Integer.parseInt(point.substring(1));
+                        x_y[1] = (int)(point.charAt(0) - 'A') + 1;
+                        dadianzi[i] = new ChessEngine.Point(x_y[0] - 1, x_y[1] - 1);
+                    }
+                    Random rand = new Random();
+                    int aiChose = rand.nextInt(count);
+                    System.out.println("AI 选择中...");
+                    GameBoard[dadianzi[aiChose].x][dadianzi[aiChose].y] = 1;
+                    AIChess = 2;
+                } else AIChess = 2;
+                gameStart = true;
                 printBoard(GameBoard);
-                boolean isFirstChess = true;
-                while (true) {
-                    System.out.println("AI is thinking...");
-                    if (!isFirstChess) {
-                        ChessEngine.Point AIStep = ChessEngine.getNextStep(GameBoard, 1);
-                        GameBoard[AIStep.x][AIStep.y] = 1;
-                    } else {
-                        GameBoard[7][7] = 1;
-                        isFirstChess = false;
+            }
+            else if (choice.equals("2")) {
+                if (sanshoujiaohuan && wushouNda) {
+                    printBoard(GameBoard);
+                    Random rand = new Random();
+                    String kaijuname = names.get(rand.nextInt(26));
+                    String[] zoufa = books.get(kaijuname)[0].split(",");
+                    System.out.println("AI 选择开局为" + kaijuname);
+                    for (int i = 0; i < zoufa.length; i++) {
+                        int[] x_y = new int[2];
+                        x_y[0] = 16 - Integer.parseInt(zoufa[i].substring(1));
+                        x_y[1] = (int)(zoufa[i].charAt(0) - 'A') + 1;
+                        GameBoard[x_y[0] - 1][x_y[1] - 1] = i % 2 + 1;
                     }
                     printBoard(GameBoard);
-                    if (ChessEngine.isAnyoneWin(GameBoard) != 0) break;
-                    System.out.println("Enter the point: ");
-                    String point = scanner.next();
-                    if (point.equals("quit")) break;
-                    String[] x_y_String = point.split(",");
-                    int[] x_y = new int[2];
-                    x_y[0] = 16 - Integer.parseInt(point.substring(1));
-                    x_y[1] = (int)(point.charAt(0) - 'A') + 1;
-                    GameBoard[x_y[0] - 1][x_y[1] - 1] = 2;
-                    printBoard(GameBoard);
-                    if (ChessEngine.isAnyoneWin(GameBoard) != 0) break;
+                    int count = 2;
+                    System.out.println("AI提出2点打点");
+                    System.out.println("是否选择换");
+                    String shifou = scanner.next();
+                    if (shifou.equals("是")) {
+                        System.out.println("已交换，现在您执黑子，AI执白子");
+                        ChessEngine.Point ainext = ChessEngine.getNextStep(GameBoard, 2);
+                        GameBoard[ainext.x][ainext.y] = 2;
+                        printBoard(GameBoard);
+                        System.out.println("请给出2点打点");
+                        ChessEngine.Point[] dadianzi = new ChessEngine.Point[count];
+                        for (int i = 0; i < count; i++) {
+                            System.out.println("请输入第" + (i + 1) + "个打点位置");
+                            String point = scanner.next();
+                            int[] x_y = new int[2];
+                            x_y[0] = 16 - Integer.parseInt(point.substring(1));
+                            x_y[1] = (int)(point.charAt(0) - 'A') + 1;
+                            dadianzi[i] = new ChessEngine.Point(x_y[0] - 1, x_y[1] - 1);
+                        }
+                        int aichoice = rand.nextInt(2);
+                        GameBoard[dadianzi[aichoice].x][dadianzi[aichoice].y] = 1;
+                        AIChess = 2;
+                        printBoard(GameBoard);
+                        System.out.println("现在开始自由落子");
+                    } else {
+                        AIChess = 1;
+                        System.out.println("请下一步棋：");
+                        String nextBu = scanner.next();
+                        int[] x_y = new int[2];
+                        x_y[0] = 16 - Integer.parseInt(nextBu.substring(1));
+                        x_y[1] = (int)(nextBu.charAt(0) - 'A') + 1;
+                        GameBoard[x_y[0] - 1][x_y[1] - 1] = 2;
+                        printBoard(GameBoard);
+                        List<ChessEngine.Point> aidadian = ChessEngine.getFreePoints(GameBoard, 1);
+                        int dadian1 = rand.nextInt(aidadian.size());
+                        int dadian2 = rand.nextInt(aidadian.size());
+                        while (dadian2 == dadian1) dadian2 = rand.nextInt(aidadian.size());
+                        System.out.println("Ai 提出" + aidadian.get(dadian1) + "和" + aidadian.get(dadian2));
+                        System.out.println("请选择第一种或者第二种");
+                        AIChess = 1;
+                        int xuanze = scanner.nextInt();
+                        if (xuanze == 1) {
+                            GameBoard[aidadian.get(dadian1).x][aidadian.get(dadian1).y] = 1;
+                        } else {
+                            GameBoard[aidadian.get(dadian2).x][aidadian.get(dadian2).y] = 1;
+                        }
                 }
-            } else if (choice.equals("3")) {
+
+                } else AIChess = 1;
+                gameStart = true;
+                printBoard(GameBoard);
+                System.out.println("现在开始自由落子");
+            }
+            else if (choice.equals("3")) {
                 String opeation = "";
                 if (scanner.hasNextLine()) opeation = scanner.nextLine();
                 while (opeation.equals("quit") == false) {
@@ -264,8 +299,40 @@ public class Main {
                 }
 
 
-            } else {
+            }
+            else {
                 System.out.println("Unknow operation, try again.");
+            }
+
+            if (gameStart ) {
+                if (AIChess == 2 && sanshoujiaohuan && wushouNda) {
+                    ChessEngine.Point point = ChessEngine.getNextStep(GameBoard, 2);
+                    GameBoard[point.x][point.y] = 2;
+                    printBoard(GameBoard);
+                }
+                if (AIChess == 1 && !sanshoujiaohuan && !wushouNda) {
+                    GameBoard[7][7] = 1;
+                    printBoard(GameBoard);
+                }
+            }
+            String point = "";
+            ChessEngine.Point AINextPoint = new ChessEngine.Point(0,0);
+            int[] x_y = new int[2];
+            while (gameStart) {
+                System.out.println("请输入序号，英文字母在前且必须为大写");
+                point = scanner.next();
+                x_y[0] = 16 - Integer.parseInt(point.substring(1));
+                x_y[1] = (int)(point.charAt(0) - 'A') + 1;
+                lastPoint.x = x_y[0];
+                lastPoint.y = x_y[1];
+                GameBoard[x_y[0] - 1][x_y[1] - 1] = AIChess == 1 ? 2 : 1;
+                if (ChessEngine.isAnyoneWin(GameBoard) != 0) break;
+                printBoard(GameBoard);
+                System.out.println("AI正在思考中......");
+                AINextPoint = ChessEngine.getNextStep(GameBoard, AIChess);
+                GameBoard[AINextPoint.x][AINextPoint.y] = AIChess;
+                printBoard(GameBoard);
+                if (ChessEngine.isAnyoneWin(GameBoard) != 0) break;
             }
 
             if (ChessEngine.isAnyoneWin(GameBoard) == 1) {
