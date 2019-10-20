@@ -33,7 +33,7 @@ public class ChessEngine {
     };
 
     public static int[] Rating_Scale_Scores = {
-            5000,
+            50000,
             432,
             72,
             72,
@@ -532,13 +532,30 @@ public class ChessEngine {
     }
 
     public static Point getNextStep(int[][] board, int AIChess) {
+        List<Point> maybeNext = getFreePoints(board, AIChess);
+        int[][] tmpBoard = board;
+        int len = maybeNext.size();
+        for (int i = 0; i < len; i++) {
+            board[maybeNext.get(i).x][maybeNext.get(i).y] = AIChess;
+            if (evaluateSituation_2(tmpBoard, AIChess - 1)[AIChess - 1] > 50000) {
+                return maybeNext.get(i);
+            }
+            board[maybeNext.get(i).x][maybeNext.get(i).y] = 0;
+        }
+        for (int i = 0; i < len; i++) {
+            board[maybeNext.get(i).x][maybeNext.get(i).y] = (AIChess == 1 ? 2 : 1);
+            if (evaluateSituation_2(tmpBoard, (AIChess == 1 ? 2 : 1) - 1)[(AIChess == 1 ? 2 : 1) - 1] > 50000) {
+                return maybeNext.get(i);
+            }
+            board[maybeNext.get(i).x][maybeNext.get(i).y] = 0;
+        }
         PointWithScore p = minimax(new Point(0, 0), board, 0, AIChess, new int[] {Integer.MAX_VALUE});
         return p.point;
     }
 
     public static PointWithScore minimax(Point step, int[][] board, int depth, int AIChess, int[] recode) {
         int score = 0;
-        if (depth >= 2) {   // 到达叶子节点，不再进行深搜
+        if (depth >= Main.level) {   // 到达叶子节点，不再进行深搜
             int tmp = evaluateSituation_2(board, AIChess - 1)[AIChess - 1]-evaluateSituation_2(board, (AIChess == 1 ? 2 : 1) - 1)[(AIChess == 1 ? 2 : 1) - 1];
             recode[0] = tmp;
             return new PointWithScore(step, tmp);

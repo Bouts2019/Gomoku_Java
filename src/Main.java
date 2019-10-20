@@ -55,23 +55,24 @@ public class Main {
             "斜月局:H8,I9,G7|H8,I9,G7\n" +
             "名月局:H8,I9,G6|H8,I9,F7\n" +
             "彗星局:H8,I9,F6";
-    public static boolean sanshoujiaohuan = true;
-    public static boolean wushouNda = true;
-    public static boolean jinshou = true;
+    public static boolean sanshoujiaohuan = false;
+    public static boolean wushouNda = false;
+    public static boolean jinshou = false;
     public static Map<String, String[]> books ;
     public static List<String> names;
     public static int AIChess = 0;
+    public static int level = 4;
     public static ChessEngine.Point lastPoint = new ChessEngine.Point(8,5);
     static int[][] board = {
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,1,1,1,1,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0,2,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,2,0,1,0,0,0,0,0},
+            {0,0,0,0,0,0,2,0,1,0,0,0,0,0,0},
+            {0,0,0,0,0,2,0,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,1,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,1,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -103,7 +104,10 @@ public class Main {
         //System.out.println(p);
 
         /* main test*/
-
+        // ┌┍┎┏┐┑┒┓—┄┈├┝┞┟┠┡┢┣|┆┊┬┭┮┯┰┱┲┳┼┽┾┿╀╂╁╃
+        System.out.println("┌─────┬──┐");
+        System.out.println("│     |");
+        System.out.println("├─────┼");
         /*
         long total = 0;
         for (int i = 0; i < 100; i++) {
@@ -148,6 +152,7 @@ public class Main {
             System.out.println("#1. You");
             System.out.println("#2. AI");
             System.out.println("#3. Settings");
+            System.out.println("#4. Quit");
             int[][] GameBoard = new int[15][15];
             Scanner scanner = new Scanner(System.in);
             choice = scanner.next();
@@ -198,6 +203,7 @@ public class Main {
                     printBoard(GameBoard);
                     Random rand = new Random();
                     String kaijuname = names.get(rand.nextInt(26));
+                    kaijuname = "瑞星局";
                     String[] zoufa = books.get(kaijuname)[0].split(",");
                     System.out.println("AI 选择开局为" + kaijuname);
                     for (int i = 0; i < zoufa.length; i++) {
@@ -267,7 +273,7 @@ public class Main {
                     System.out.println("#1. 禁手规则 " + (jinshou ? "√" : "×"));
                     System.out.println("#2. 三手交换 " + (sanshoujiaohuan ? "√" : "×"));
                     System.out.println("#3. 五手N打 " + (wushouNda ? "√" : "×"));
-
+                    System.out.println("#4. 难度设置 当前" + Main.level);
                     System.out.println("#输入命令:");
                     opeation = scanner.nextLine();
 
@@ -293,12 +299,18 @@ public class Main {
                         wushouNda = false;
                     } else if (opeation.equals("quit")) {
                         break;
+                    } else if (opeation.equals("4")) {
+                        System.out.println("请输入难度：");
+                        int hardLevel = scanner.nextInt();
+                        Main.level = hardLevel;
                     } else {
                         System.out.println("未定义的操作");
                     }
                 }
 
 
+            } else if (choice.equals("4") || choice.equals("quit")) {
+                break;
             }
             else {
                 System.out.println("Unknow operation, try again.");
