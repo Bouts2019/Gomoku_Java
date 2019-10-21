@@ -57,22 +57,22 @@ public class Main {
             "彗星局:H8,I9,F6";
     public static boolean sanshoujiaohuan = false;
     public static boolean wushouNda = false;
-    public static boolean jinshou = false;
+    public static boolean jinshou = true;
     public static Map<String, String[]> books ;
     public static List<String> names;
     public static int AIChess = 0;
-    public static int level = 4;
+    public static int level = 2;
     public static ChessEngine.Point lastPoint = new ChessEngine.Point(8,5);
     static int[][] board = {
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,0,2,0,0,0,0,0,0},
-            {0,0,0,0,0,0,0,2,0,1,0,0,0,0,0},
-            {0,0,0,0,0,0,2,0,1,0,0,0,0,0,0},
-            {0,0,0,0,0,2,0,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,0,1,0,0,0,0,0,0,0,0},
-            {0,0,0,0,0,1,0,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,2,1,2,0,0,0,0,0,0,0},
+            {0,0,0,0,0,2,1,2,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,1,1,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
@@ -105,9 +105,9 @@ public class Main {
 
         /* main test*/
         // ┌┍┎┏┐┑┒┓—┄┈├┝┞┟┠┡┢┣|┆┊┬┭┮┯┰┱┲┳┼┽┾┿╀╂╁╃
-        System.out.println("┌─────┬──┐");
-        System.out.println("│     |");
-        System.out.println("├─────┼");
+        //System.out.println("┌─────┬──┐");
+        //System.out.println("│     |");
+        //System.out.println("├─────┼");
         /*
         long total = 0;
         for (int i = 0; i < 100; i++) {
@@ -127,10 +127,10 @@ public class Main {
         //int[] score2 = ChessEngine.evaluateSituation_2(board,0);
         //System.out.println(score1[0] + "\n" + score2[0]);
 
-
+        //System.out.println(ChessEngine.isBanPoint(board, new ChessEngine.Point(6,7)));
 
         Player_VS_AI();
-
+        //AI_VS_AI();
 
         /**/
 
@@ -342,8 +342,14 @@ public class Main {
                 printBoard(GameBoard);
                 System.out.println("AI正在思考中......");
                 AINextPoint = ChessEngine.getNextStep(GameBoard, AIChess);
+                while (jinshou && AIChess == 1 && ChessEngine.isBanPoint(GameBoard, AINextPoint)) {
+                    int[][] tmpBoard = GameBoard;
+                    tmpBoard[AINextPoint.x][AINextPoint.y] = -1;
+                    AINextPoint = ChessEngine.getNextStep(GameBoard, AIChess);
+                }
                 GameBoard[AINextPoint.x][AINextPoint.y] = AIChess;
                 printBoard(GameBoard);
+                System.out.println("AI下子位置为" + (char)(AINextPoint.y + 'A') + (15 - AINextPoint.x));
                 if (ChessEngine.isAnyoneWin(GameBoard) != 0) break;
             }
 

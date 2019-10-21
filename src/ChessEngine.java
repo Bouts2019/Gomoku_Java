@@ -512,7 +512,7 @@ public class ChessEngine {
             }
         }
         //(6, 6)->(6, 7)->(6, 8)->(7, 6)->(7, 8)->(8, 6)->(8, 7)->(8, 8)->
-        //sortPoints(board, hasWhat, points);
+        sortPoints(board, hasWhat, points);
 
         return points;
     }
@@ -529,6 +529,193 @@ public class ChessEngine {
             this.point = point;
             this.score = score;
         }
+    }
+
+    public static boolean isBanPoint(int[][] board, Point point) {
+        // 直角三三
+        if (point.x - 3 >= 0 && point.y - 3 >= 0) {
+            if (board[point.x][point.y - 3] == 0 &&
+                    board[point.x][point.y - 2] == 1 &&
+                    board[point.x][point.y - 1] == 1 &&
+                    board[point.x - 3][point.y] == 0 &&
+                    board[point.x - 2][point.y] == 1 &&
+                    board[point.x - 1][point.y] == 1 ) return true;
+        }
+        if (point.x - 3 >= 0 && point.y + 3 >= 0) {
+            if (board[point.x][point.y + 3] == 0 &&
+                    board[point.x][point.y + 2] == 1 &&
+                    board[point.x][point.y + 1] == 1 &&
+                    board[point.x - 3][point.y] == 0 &&
+                    board[point.x - 2][point.y] == 1 &&
+                    board[point.x - 1][point.y] == 1 ) return true;
+        }
+        if (point.x + 3 >= 0 && point.y - 3 >= 0) {
+            if (board[point.x][point.y - 3] == 0 &&
+                    board[point.x][point.y - 2] == 1 &&
+                    board[point.x][point.y - 1] == 1 &&
+                    board[point.x + 3][point.y] == 0 &&
+                    board[point.x + 2][point.y] == 1 &&
+                    board[point.x + 1][point.y] == 1 ) return true;
+        }
+        if (point.x + 3 >= 0 && point.y + 3 >= 0) {
+            if (board[point.x][point.y + 3] == 0 &&
+                    board[point.x][point.y + 2] == 1 &&
+                    board[point.x][point.y + 1] == 1 &&
+                    board[point.x + 3][point.y] == 0 &&
+                    board[point.x + 2][point.y] == 1 &&
+                    board[point.x + 1][point.y] == 1 ) return true;
+        }
+        // 四十五度三三禁手
+        if (point.x - 3 >= 0 && point.y - 3 >= 0) {
+            if (board[point.x - 3][point.y - 3] == 0 &&
+                    board[point.x - 2][point.y - 2] == 1 &&
+                    board[point.x - 1][point.y - 1] == 1 &&
+                    board[point.x - 3][point.y] == 0 &&
+                    board[point.x - 2][point.y] == 1 &&
+                    board[point.x - 1][point.y] == 1 ) return true;
+        }
+        if (point.x - 3 >= 0 && point.y + 3 <= 14) {
+            if (board[point.x - 3][point.y + 3] == 0 &&
+                    board[point.x - 2][point.y + 2] == 1 &&
+                    board[point.x - 1][point.y + 1] == 1 &&
+                    board[point.x - 3][point.y] == 0 &&
+                    board[point.x - 2][point.y] == 1 &&
+                    board[point.x - 1][point.y] == 1 ) return true;
+        }
+        if (point.x - 3 >= 0 && point.y + 3 <= 14) {
+            if (board[point.x - 3][point.y + 3] == 0 &&
+                    board[point.x - 2][point.y + 2] == 1 &&
+                    board[point.x - 1][point.y + 1] == 1 &&
+                    board[point.x][point.y + 3] == 0 &&
+                    board[point.x][point.y + 2] == 1 &&
+                    board[point.x][point.y + 1] == 1 ) return true;
+        }
+        if (point.x + 3 <= 14 && point.y + 3 <= 14) {
+            if (board[point.x + 3][point.y + 3] == 0 &&
+                    board[point.x + 2][point.y + 2] == 1 &&
+                    board[point.x + 1][point.y + 1] == 1 &&
+                    board[point.x][point.y + 3] == 0 &&
+                    board[point.x][point.y + 2] == 1 &&
+                    board[point.x][point.y + 1] == 1 ) return true;
+        }
+        if (point.x + 3 <= 14 && point.y + 3 <= 14) {
+            if (board[point.x + 3][point.y + 3] == 0 &&
+                    board[point.x + 2][point.y + 2] == 1 &&
+                    board[point.x + 1][point.y + 1] == 1 &&
+                    board[point.x + 3][point.y] == 0 &&
+                    board[point.x + 2][point.y] == 1 &&
+                    board[point.x + 1][point.y] == 1 ) return true;
+        }
+        if (point.x + 3 <= 14 && point.y - 3 >= 0) {
+            if (board[point.x + 3][point.y - 3] == 0 &&
+                    board[point.x + 2][point.y - 2] == 1 &&
+                    board[point.x + 1][point.y - 1] == 1 &&
+                    board[point.x + 3][point.y] == 0 &&
+                    board[point.x + 2][point.y] == 1 &&
+                    board[point.x + 1][point.y] == 1 ) return true;
+        }
+        if (point.x + 3 <= 14 && point.y - 3 >= 0) {
+            if (board[point.x + 3][point.y - 3] == 0 &&
+                    board[point.x + 2][point.y - 2] == 1 &&
+                    board[point.x + 1][point.y - 1] == 1 &&
+                    board[point.x][point.y - 3] == 0 &&
+                    board[point.x][point.y - 2] == 1 &&
+                    board[point.x][point.y - 1] == 1 ) return true;
+        }
+        if (point.x - 3 >= 0 && point.y - 3 >= 0) {
+            if (board[point.x - 3][point.y - 3] == 0 &&
+                    board[point.x - 2][point.y - 2] == 1 &&
+                    board[point.x - 1][point.y - 1] == 1 &&
+                    board[point.x][point.y - 3] == 0 &&
+                    board[point.x][point.y - 2] == 1 &&
+                    board[point.x][point.y - 1] == 1 ) return true;
+        }
+        // 斜直角三三
+        if (point.x - 3 >= 0 && point.y - 3 >= 0 && point.y + 3 <= 14) {
+            if (board[point.x - 3][point.y - 3] == 0 &&
+                    board[point.x - 2][point.y - 2] == 1 &&
+                    board[point.x - 1][point.y - 1] == 1 &&
+                    board[point.x - 3][point.y + 3] == 0 &&
+                    board[point.x - 2][point.y + 2] == 1 &&
+                    board[point.x - 1][point.y + 1] == 1 ) return true;
+        }
+        if (point.x - 3 >= 0 && point.x + 3 <= 14 && point.y + 3 <= 14) {
+            if (board[point.x - 3][point.y + 3] == 0 &&
+                    board[point.x - 2][point.y + 2] == 1 &&
+                    board[point.x - 1][point.y + 1] == 1 &&
+                    board[point.x + 3][point.y + 3] == 0 &&
+                    board[point.x + 2][point.y + 2] == 1 &&
+                    board[point.x + 1][point.y + 1] == 1 ) return true;
+        }
+        if (point.y - 3 >= 0 && point.x + 3 <= 14 && point.y + 3 <= 14) {
+            if (board[point.x + 3][point.y - 3] == 0 &&
+                    board[point.x + 2][point.y - 2] == 1 &&
+                    board[point.x + 1][point.y - 1] == 1 &&
+                    board[point.x + 3][point.y + 3] == 0 &&
+                    board[point.x + 2][point.y + 2] == 1 &&
+                    board[point.x + 1][point.y + 1] == 1 ) return true;
+        }
+        if (point.x - 3 >= 0 && point.y - 3 >= 0 && point.x + 3 <= 14) {
+            if (board[point.x - 3][point.y - 3] == 0 &&
+                    board[point.x - 2][point.y - 2] == 1 &&
+                    board[point.x - 1][point.y - 1] == 1 &&
+                    board[point.x + 3][point.y - 3] == 0 &&
+                    board[point.x + 2][point.y - 2] == 1 &&
+                    board[point.x + 1][point.y - 1] == 1 ) return true;
+        }
+        // 直角四四
+        if (point.x - 4 >= 0 && point.y - 4 >= 0) {
+            if (board[point.x][point.y - 4] == 0 &&
+                    board[point.x][point.y - 3] == 1 &&
+                    board[point.x][point.y - 2] == 1 &&
+                    board[point.x][point.y - 1] == 1 &&
+                    board[point.x - 4][point.y] == 0 &&
+                    board[point.x - 3][point.y] == 1 &&
+                    board[point.x - 2][point.y] == 1 &&
+                    board[point.x - 1][point.y] == 1) return true;
+        }
+        if (point.x - 4 >= 0 && point.y + 4 <= 14) {
+            if (board[point.x][point.y + 4] == 0 &&
+                    board[point.x][point.y + 3] == 1 &&
+                    board[point.x][point.y + 2] == 1 &&
+                    board[point.x][point.y + 1] == 1 &&
+                    board[point.x - 4][point.y] == 0 &&
+                    board[point.x - 3][point.y] == 1 &&
+                    board[point.x - 2][point.y] == 1 &&
+                    board[point.x - 1][point.y] == 1) return true;
+        }
+        if (point.x + 4 <= 14 && point.y + 4 <= 14) {
+            if (board[point.x][point.y + 4] == 0 &&
+                    board[point.x][point.y + 3] == 1 &&
+                    board[point.x][point.y + 2] == 1 &&
+                    board[point.x][point.y + 1] == 1 &&
+                    board[point.x + 4][point.y] == 0 &&
+                    board[point.x + 3][point.y] == 1 &&
+                    board[point.x + 2][point.y] == 1 &&
+                    board[point.x + 1][point.y] == 1) return true;
+        }
+        if (point.x + 4 <= 14 && point.y - 4 >= 0) {
+            if (board[point.x][point.y - 4] == 0 &&
+                    board[point.x][point.y - 3] == 1 &&
+                    board[point.x][point.y - 2] == 1 &&
+                    board[point.x][point.y - 1] == 1 &&
+                    board[point.x + 4][point.y] == 0 &&
+                    board[point.x + 3][point.y] == 1 &&
+                    board[point.x + 2][point.y] == 1 &&
+                    board[point.x + 1][point.y] == 1) return true;
+        }
+        // 交叉三三禁手
+        if (point.x + 2 <= 14 && point.x - 2 >=0 && point.y + 2 <= 14 && point.y - 2 >= 0) {
+            if (board[point.x - 2][point.y - 2] == 0 &&
+                    board[point.x + 2][point.y - 2] == 0 &&
+                    board[point.x + 2][point.y + 2] == 0 &&
+                    board[point.x - 2][point.y + 2] == 0 &&
+                    board[point.x + 1][point.y - 1] == 1 &&
+                    board[point.x + 1][point.y + 1] == 1 &&
+                    board[point.x - 1][point.y - 1] == 1 &&
+                    board[point.x - 1][point.y + 1] == 1) return true;
+        }
+        return false;
     }
 
     public static Point getNextStep(int[][] board, int AIChess) {
