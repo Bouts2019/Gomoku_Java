@@ -250,7 +250,7 @@ public class Main {
                         int dadian1 = rand.nextInt(aidadian.size());
                         int dadian2 = rand.nextInt(aidadian.size());
                         while (dadian2 == dadian1) dadian2 = rand.nextInt(aidadian.size());
-                        System.out.println("Ai 提出" + aidadian.get(dadian1) + "和" + aidadian.get(dadian2));
+                        System.out.println("Ai 提出" + (char)(aidadian.get(dadian1).y + 'A') + (15 - aidadian.get(dadian1).x)  + "和" + (char)(aidadian.get(dadian2).y + 'A') + (15 - aidadian.get(dadian2).x)  );
                         System.out.println("请选择第一种或者第二种");
                         AIChess = 1;
                         int xuanze = scanner.nextInt();
@@ -333,6 +333,14 @@ public class Main {
             while (gameStart) {
                 System.out.println("请输入序号，英文字母在前且必须为大写");
                 point = scanner.next();
+                if (point.equals("frontStep")) {
+                    GameBoard[AINextPoint.x][AINextPoint.y] = 0;
+                    GameBoard[lastPoint.x - 1][lastPoint.y - 1] = 0;
+                    printBoard(GameBoard);
+                    System.out.println(lastPoint);
+                    System.out.println("悔棋成功，现在请继续输入下一步，英文字母在前且必须为大写");
+                    point = scanner.next();
+                }
                 x_y[0] = 16 - Integer.parseInt(point.substring(1));
                 x_y[1] = (int)(point.charAt(0) - 'A') + 1;
                 lastPoint.x = x_y[0];
