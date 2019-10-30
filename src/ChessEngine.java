@@ -3,11 +3,6 @@ import java.util.Date;
 import java.util.List;
 
 public class ChessEngine {
-    /*
-    Time test
-     */
-
-
     static long totalTime = 0;
 
     // ================

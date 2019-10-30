@@ -1,7 +1,3 @@
-import com.sun.media.jfxmediaimpl.HostUtils;
-
-import javax.management.monitor.GaugeMonitorMBean;
-import java.io.IOException;
 import java.util.*;
 
 public class Main {
@@ -57,7 +53,7 @@ public class Main {
             "彗星局:H8,I9,F6";
     public static boolean sanshoujiaohuan = false;
     public static boolean wushouNda = false;
-    public static boolean jinshou = true;
+    public static boolean jinshou = false;
     public static Map<String, String[]> books ;
     public static List<String> names;
     public static int AIChess = 0;
